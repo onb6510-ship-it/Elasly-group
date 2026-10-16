@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+(function(){var ph='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"><rect width="100%" height="100%" fill="#1e293b"/><text x="50%" y="50%" fill="#38bdf8" font-size="20" text-anchor="middle" font-family="sans-serif">&#9881;</text></svg>');
+document.addEventListener('error',function(e){var t=e.target;if(t&&t.tagName==='IMG'&&t.src!==ph){t.src=ph;}},true);})();
+</script>
+<title>نظام جملة قطع غيار الموبايلات | B2B Spare Parts</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <!-- Modern Tech Fonts: Readex Pro & Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Readex+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- SheetJS for Excel Import/Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body { font-family: 'Readex Pro', 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+    .glass { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; background: #fff !important; color: #000 !important; padding: 10px; }
+      .thermal-80mm { width: 80mm !important; margin: 0 auto; font-size: 12px; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Header -->
+  <header class="glass sticky top-0 z-40 px-4 py-3 flex flex-wrap justify-between items-center gap-2 border-b border-slate-800">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-cyan-500 flex items-center justify-center font-bold text-slate-950 text-xl shadow-lg shadow-cyan-500/30">⚡</div>
+      <div>
+        <h1 id="storeTitleDisplay" class="font-bold text-lg text-cyan-400">مركز جملة قطع غيار الموبايلات</h1>
+        <p id="roleBadge" class="text-xs text-slate-400">بوابة الدخول الذكية</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <!-- Customer Contact Store Button -->
+      <button id="customerMsgBtn" onclick="openCustomerMessagesModal()" class="hidden relative bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1">
+        <span>💬 تواصل بالمحل</span>
+        <span id="unreadMsgBadge" class="bg-red-500 text-white rounded-full px-1.5 py-0.2 text-[10px]">0</span>
+      </button>
+
+      <!-- Language Switcher -->
+      <button onclick="toggleLanguage()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold text-cyan-300">
+        🌐 AR / EN
+      </button>
+
+      <!-- Logout Button -->
+      <button id="logoutBtn" onclick="logout()" class="hidden bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+        تسجيل خروج
+      </button>
+    </div>
+  </header>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:w-96 z-50 hidden bg-cyan-950 border border-cyan-500 text-cyan-100 px-4 py-3 rounded-xl shadow-2xl text-sm"></div>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 container mx-auto p-4 max-w-7xl">
+
+    <!-- ================= 1. AUTH VIEW (LOGIN / REGISTER) ================= -->
+    <section id="authView" class="max-w-md mx-auto my-8 glass p-6 rounded-2xl shadow-2xl">
+      <div class="flex border-b border-slate-700 mb-6">
+        <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 font-bold text-cyan-400 border-b-2 border-cyan-400">تسجيل الدخول</button>
+        <button id="tabRegBtn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 font-bold text-slate-400">تسجيل حساب زبون (محل)</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs text-slate-300 mb-1">رقم الموبايل أو اسم المستخدم</label>
+          <input type="text" id="loginUser" required placeholder="مثال: admin أو رقم الموبايل" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm focus:border-cyan-400 outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs text-slate-300 mb-1">كلمة المرور السرية</label>
+          <input type="password" id="loginPass" required placeholder="••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm focus:border-cyan-400 outline-none" />
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <label class="flex items-center gap-2 cursor-pointer text-slate-300">
+            <input type="checkbox" id="rememberMe" checked class="rounded accent-cyan-500 w-4 h-4" />
+            <span>تذكرني (البقاء مسجلاً على هذا الجهاز)</span>
+          </label>
+        </div>
+        <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-2.5 rounded-xl shadow-lg shadow-cyan-500/20 transition">
+          دخول للنظام
+        </button>
+      </form>
+
+      <!-- Customer Register Form -->
+      <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-3 hidden">
+        <div>
+          <label class="block text-xs text-slate-300 mb-1">اسم صاحب المحل / الفني</label>
+          <input type="text" id="regName" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs text-slate-300 mb-1">اسم المحل أو المركز</label>
+          <input type="text" id="regShop" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs text-slate-300 mb-1">رقم الموبايل (تصل عليه الرسائل)</label>
+          <input type="tel" id="regPhone" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs text-slate-300 mb-1">كلمة المرور الخاصة بك</label>
+          <input type="password" id="regPass" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs text-slate-300 mb-1">العنوان التفصيلي</label>
+          <input type="text" id="regAddress" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs text-slate-300 mb-1">الموقع الجغرافي (GPS)</label>
+          <div class="flex gap-2">
+            <input type="text" id="regGps" placeholder="30.0444, 31.2357" required class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs" />
+            <button type="button" onclick="detectUserGPS('regGps')" class="bg-indigo-600 hover:bg-indigo-500 px-3 py-2 rounded-xl text-xs font-bold">📍 تحديد موقعي</button>
+          </div>
+        </div>
+        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2.5 rounded-xl mt-2">
+          إرسال طلب فتح حساب جملة
+        </button>
+      </form>
+    </section>
+
+    <!-- ================= PENDING APPROVAL SCREEN ================= -->
+    <section id="pendingView" class="hidden max-w-lg mx-auto my-12 glass p-8 rounded-2xl text-center space-y-4">
+      <div class="text-5xl">⏳</div>
+      <h2 class="text-xl font-bold text-amber-400">حسابك قيد المراجعة والتفعيل</h2>
+      <p class="text-sm text-slate-300">تم إرسال بيانات محلك للإدارة. بمجرد موافقة المالك أو المساعد ستظهر لك أسعار الجملة الموحدة وتتمكن من إرسال الأوردرات.</p>
+    </section>
+
+    <!-- ================= 2. OWNER & STAFF PORTAL ================= -->
+    <section id="adminStaffView" class="hidden space-y-6">
+      <!-- Owner Stats Bar -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div id="dailySalesCard" class="glass p-4 rounded-2xl border-r-4 border-emerald-500">
+          <p class="text-xs text-slate-400">💰 المبيعات اليومية الصافية (تلقائي)</p>
+          <p class="text-2xl font-bold text-emerald-400 mt-1"><span id="statDailySales">0</span> ج.م</p>
+          <p class="text-[11px] text-slate-400 mt-1">تُضاف وتُخصم تلقائياً مع إضافة أو إلغاء/حذف الفواتير</p>
+        </div>
+        <div class="glass p-4 rounded-2xl border-r-4 border-cyan-500">
+          <p class="text-xs text-slate-400">📦 الأوردرات النشطة</p>
+          <p class="text-2xl font-bold text-cyan-400 mt-1" id="statActiveOrders">0</p>
+        </div>
+        <div class="glass p-4 rounded-2xl border-r-4 border-amber-500">
+          <p class="text-xs text-slate-400">👥 زبائن بانتظار التفعيل</p>
+          <p class="text-2xl font-bold text-amber-400 mt-1" id="statPendingCustomers">0</p>
+        </div>
+        <div class="glass p-4 rounded-2xl border-r-4 border-purple-500">
+          <p class="text-xs text-slate-400">💳 رقم محفظة الكاش & المستعجل</p>
+          <p class="text-sm font-bold text-purple-300 mt-1" id="statWalletDisplay">غير محدد</p>
+          <p class="text-xs text-rose-400 mt-0.5">سعر المستعجل: <span id="statUrgentFee">0</span> ج.م</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
+        <button onclick="switchAdminTab('orders')" class="admin-tab bg-cyan-500 text-slate-950 px-4 py-2 rounded-xl text-xs font-bold">📋 الأوردرات والفواتير</button>
+        <button onclick="switchAdminTab('products')" class="admin-tab bg-slate-800 text-slate-200 px-4 py-2 rounded-xl text-xs font-bold">📱 الأصناف والمنتجات (Excel)</button>
+        <button onclick="switchAdminTab('customers')" class="admin-tab bg-slate-800 text-slate-200 px-4 py-2 rounded-xl text-xs font-bold">🏪 الزبائن والحسابات والرسائل</button>
+        <button onclick="switchAdminTab('tracking')" class="admin-tab bg-slate-800 text-slate-200 px-4 py-2 rounded-xl text-xs font-bold">🛵 تتبع المناديب والمرتجعات</button>
+        <button id="ownerOnlyTeamTab" onclick="switchAdminTab('team')" class="admin-tab bg-slate-800 text-slate-200 px-4 py-2 rounded-xl text-xs font-bold">🔐 إدارة الأعضاء والإعدادات (للمالك)</button>
+      </div>
+
+      <!-- TAB 1: ORDERS -->
+      <div id="adminOrdersSection" class="space-y-4">
+        <div class="flex justify-between items-center">
+          <h2 class="text-lg font-bold text-cyan-400">إدارة الأوردرات والفواتير اللحظية</h2>
+          <span class="text-xs text-slate-400">تظهر الأوردرات المستعجلة في المقدمة باللون الأحمر</span>
+        </div>
+        <div id="adminOrdersList" class="space-y-4"></div>
+      </div>
+
+      <!-- TAB 2: PRODUCTS (CATEGORIES & DESCRIPTION, NO STOCK NUMBERS) -->
+      <div id="adminProductsSection" class="hidden space-y-6">
+        <div class="glass p-5 rounded-2xl space-y-4">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <h3 class="font-bold text-cyan-400">إضافة / تعديل قطعة غيار (أصناف ووصف وصور بدون كميات)</h3>
+            <div class="flex flex-wrap gap-2">
+              <label class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer">
+                📥 استيراد شيت Excel
+                <input type="file" accept=".xlsx,.xls" onchange="importProductsExcel(event)" class="hidden" />
+              </label>
+              <button onclick="exportProductsExcel()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold">
+                📤 تصدير الأصناف Excel
+              </button>
+            </div>
+          </div>
+
+          <form id="productForm" onsubmit="saveProduct(event)" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <input type="hidden" id="prodId" />
+            <input type="text" id="prodModel" required placeholder="موديل الموبايل (مثال: A51 أو iPhone 11)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+            <input type="text" id="prodCategory" required placeholder="الصنف (شاشة، بطارية، فلاتة، باغة، ضهر)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+            <input type="text" id="prodName" required placeholder="اسم القطعة ودرجة الجودة (أصلي، أوليميتد، إن سيل)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+            <input type="number" id="prodPrice" required placeholder="سعر بيع الجملة (ج.م)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+            <input type="text" id="prodColors" placeholder="الألوان المتاحة مفصولة بفاصلة (أسود, أبيض, أزرق)" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+            <select id="prodStatus" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+              <option value="available">🟢 متوفر</option>
+              <option value="low">🟠 أوشك على النفاذ</option>
+              <option value="out">🔴 نفذت الكمية</option>
+            </select>
+            <input type="text" id="prodDesc" placeholder="وصف القطعة والتفاصيل..." class="md:col-span-2 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+            <div class="flex gap-2 items-center">
+              <input type="text" id="prodImg" placeholder="رابط صورة المنتج أو ارفع صورة" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs" />
+              <label class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-xl text-xs cursor-pointer">
+                📷 صورة
+                <input type="file" accept="image/*" onchange="encodeImageToInput(event, 'prodImg')" class="hidden" />
+              </label>
+            </div>
+            <div class="md:col-span-3 flex gap-4 items-center text-xs">
+              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="prodOffer" class="accent-cyan-500" /> 🔥 عرض خاص وخصم</label>
+              <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="prodNew" checked class="accent-cyan-500" /> ✨ وصل حديثاً</label>
+              <button type="submit" class="mr-auto bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-6 py-2 rounded-xl">حفظ الصنف</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="adminProductsList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- TAB 3: CUSTOMERS, LEDGER, WALLET CONFIRM & MESSAGING -->
+      <div id="adminCustomersSection" class="hidden space-y-4">
+        <h3 class="font-bold text-cyan-400">إدارة الزبائن (أصحاب المحلات)، قبول الحسابات، المحفظة، والرسائل</h3>
+        <div id="adminCustomersList" class="space-y-3"></div>
+      </div>
+
+      <!-- TAB 4: LIVE AGENT TRACKING & RETURNS & MISSING PARTS -->
+      <div id="adminTrackingSection" class="hidden space-y-6">
+        <div class="glass p-5 rounded-2xl space-y-3">
+          <h3 class="font-bold text-cyan-400">📍 تتبع مناديب التوصيل وحالة الاستلام لحظياً</h3>
+          <div id="adminAgentsLiveList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <div class="glass p-5 rounded-2xl space-y-3">
+          <h3 class="font-bold text-amber-400">🔄 طلبات المرتجعات من العملاء</h3>
+          <div id="adminReturnsList" class="space-y-3"></div>
+        </div>
+
+        <div class="glass p-5 rounded-2xl space-y-3">
+          <h3 class="font-bold text-purple-400">📝 نواقص السوق (قطع طلبها العملاء)</h3>
+          <div id="adminMissingList" class="space-y-2 text-xs"></div>
+        </div>
+      </div>
+
+      <!-- TAB 5: OWNER ONLY (TEAM MANAGEMENT & SETTINGS & WIPE) -->
+      <div id="adminTeamSection" class="hidden space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Store Settings -->
+          <div class="glass p-5 rounded-2xl space-y-4">
+            <h3 class="font-bold text-cyan-400">⚙️ إعدادات المحل والطلب المستعجل ومحفظة الكاش</h3>
+            <div>
+              <label class="block text-xs text-slate-300 mb-1">اسم المحل / البراند</label>
+              <input type="text" id="setStoreName" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-300 mb-1">رقم الدفع كاش (محفظة إلكترونية يظهر للعملاء)</label>
+              <input type="text" id="setWalletNumber" placeholder="010XXXXXXXX" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-300 mb-1">سعر إضافي للطلب المستعجل (ج.م)</label>
+              <input type="number" id="setUrgentFee" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+            </div>
+            <div class="flex gap-2">
+              <button onclick="saveOwnerSettings()" class="flex-1 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-2 rounded-xl text-sm">حفظ الإعدادات</button>
+              <button onclick="wipeAllData()" class="bg-red-600 hover:bg-red-500 text-white font-bold px-4 py-2 rounded-xl text-xs">🗑️ تصفير وحذف كل المنتجات والحسابات</button>
+            </div>
+          </div>
+
+          <!-- Add Team Member (Owner Only) -->
+          <div class="glass p-5 rounded-2xl space-y-3">
+            <h3 class="font-bold text-cyan-400">👤 إضافة عضو فريق (مالك / مساعد / مندوب توصيل بصورته)</h3>
+            <p class="text-xs text-slate-400">التحكم في الأعضاء حصرياً للمالك فقط. كل عضو له كلمة مرور خاصة به.</p>
+            <form onsubmit="addTeamMember(event)" class="space-y-3">
+              <input type="text" id="teamName" required placeholder="الاسم الكامل" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+              <input type="text" id="teamPhone" required placeholder="رقم الموبايل / اسم الدخول" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+              <input type="password" id="teamPass" required placeholder="كلمة المرور الخاصة به" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+              <select id="teamRole" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm">
+                <option value="owner">👑 مالك / مسؤول (Owner)</option>
+                <option value="staff">🛠️ مساعد بالمحل (Staff)</option>
+                <option value="delivery">🛵 مندوب توصيل (Delivery Agent)</option>
+              </select>
+              <div class="flex gap-2 items-center">
+                <input type="text" id="teamPhoto" placeholder="رابط صورة المندوب (أو ارفع صورة)" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs" />
+                <label class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-xl text-xs cursor-pointer">
+                  📷 صورة المندوب
+                  <input type="file" accept="image/*" onchange="encodeImageToInput(event, 'teamPhoto')" class="hidden" />
+                </label>
+              </div>
+              <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2 rounded-xl text-sm">إضافة العضو</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="glass p-5 rounded-2xl">
+          <h4 class="font-bold text-sm text-slate-300 mb-3">قائمة الملاك والمساعدين والمناديب الحاليين</h4>
+          <div id="teamMembersList" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 3. CUSTOMER PORTAL (شاشة الزبون) ================= -->
+    <section id="customerView" class="hidden space-y-6">
+      <!-- Top Info Banner -->
+      <div class="glass p-4 rounded-2xl flex flex-wrap justify-between items-center gap-4 border-r-4 border-cyan-400">
+        <div>
+          <h2 class="font-bold text-lg text-white">أهلاً بك، <span id="custWelcomeName" class="text-cyan-400"></span></h2>
+          <p class="text-xs text-slate-300">💳 رقم محفظة الكاش للتحويل: <strong id="custWalletNumberDisplay" class="text-emerald-400 select-all"></strong></p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="bg-slate-900 px-4 py-2 rounded-xl border border-slate-700 text-center">
+            <span class="block text-[11px] text-slate-400">الرصيد المستحق عليك</span>
+            <span id="custBalanceDue" class="font-bold text-rose-400 text-base">0 ج.م</span>
+          </div>
+          <button onclick="scrollToCartForm()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs shadow-lg shadow-cyan-500/20">
+            🛒 طلب أوردر الآن (<span id="cartCountBadge">0</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Instant Model Search & Missing Part Request -->
+      <div class="glass p-5 rounded-2xl space-y-4">
+        <div class="flex flex-col md:flex-row gap-3">
+          <input type="text" id="custSearchInput" oninput="renderCustomerProducts()" placeholder="🔍 ابحث باسم الموديل مباشر (مثال: A51 أو iPhone 11) أو اسم القطعة..." class="flex-1 bg-slate-900 border-2 border-cyan-500/50 focus:border-cyan-400 rounded-xl px-4 py-3 text-sm outline-none" />
+          <button onclick="promptMissingPart()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-3 rounded-xl text-xs whitespace-nowrap">
+            ➕ اطلب قطعة غير متوفرة
+          </button>
+        </div>
+      </div>
+
+      <!-- Customer Products Display Grid -->
+      <div>
+        <h3 class="font-bold text-cyan-400 mb-3">📱 الأصناف وقطع الغيار المتاحة</h3>
+        <div id="customerProductsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+
+      <!-- Submit / Edit Order Form -->
+      <div id="customerOrderFormCard" class="glass p-6 rounded-2xl border border-cyan-500/40 space-y-4">
+        <div class="flex justify-between items-center">
+          <h3 id="cartFormTitle" class="font-bold text-lg text-cyan-400">🛒 سلة الطلب وإرسال أوردر جديد</h3>
+          <span id="editingOrderBadge" class="hidden bg-amber-500 text-slate-950 px-3 py-1 rounded-lg text-xs font-bold">تعديل أوردر مؤكد</span>
+        </div>
+
+        <div id="cartItemsContainer" class="space-y-2 text-sm"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-800">
+          <div>
+            <label class="block text-xs text-slate-300 mb-1">طريقة استلام الأوردر (يمكنك تعديلها حتى بعد التأكيد)</label>
+            <select id="orderDeliveryMethod" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm">
+              <option value="delivery">🛵 توصيل عبر المندوب (يحدد المندوب تكلفة الشحن عند الاستلام)</option>
+              <option value="pickup">🏪 استلام من المحل مباشرة (بدون شحن)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-300 mb-1">طريقة الدفع</label>
+            <select id="orderPaymentMethod" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm">
+              <option value="cash">💵 نقدي عند الاستلام</option>
+              <option value="wallet">📲 تحويل محفظة إلكترونية (كاش)</option>
+              <option value="credit">📒 تسجيل على الحساب الآجل</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs text-slate-300 mb-1">📝 ملاحظات الزبون في الفاتورة</label>
+            <input type="text" id="orderCustomerNotes" placeholder="اكتب أي ملاحظات أو تفاصيل إضافية تريدها في الفاتورة..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+          </div>
+          <div class="md:col-span-2 flex flex-wrap items-center justify-between gap-3 bg-rose-950/40 border border-rose-500/40 p-3 rounded-xl">
+            <label class="flex items-center gap-2 cursor-pointer text-sm font-bold text-rose-300">
+              <input type="checkbox" id="orderUrgentCheckbox" onchange="renderCart()" class="w-5 h-5 accent-rose-500" />
+              <span>🚨 خاصية أوردر مستعجل (يُضاف <span id="custUrgentFeeText">0</span> ج.م للفاتورة وأولوية قصوى)</span>
+            </label>
+            <div class="text-left font-bold text-lg text-emerald-400">
+              الإجمالي: <span id="cartTotalDisplay">0</span> ج.م
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <button onclick="submitCustomerOrder()" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 rounded-xl shadow-lg text-sm">
+            ✅ تأكيد وإرسال الأوردر الآن
+          </button>
+          <button id="cancelEditOrderBtn" onclick="cancelOrderEditMode()" class="hidden bg-slate-700 hover:bg-slate-600 text-white px-4 py-3 rounded-xl text-xs font-bold">
+            إلغاء التعديل
+          </button>
+        </div>
+      </div>
+
+      <!-- Customer Active & Past Orders + Tracking + Returns -->
+      <div class="glass p-5 rounded-2xl space-y-4">
+        <h3 class="font-bold text-cyan-400">📦 أوردراتي ومتابعة المندوب وتعديل/إلغاء الطلبات</h3>
+        <div id="customerOrdersList" class="space-y-4"></div>
+      </div>
+    </section>
+
+    <!-- ================= 4. DELIVERY AGENT PORTAL (شاشة المندوب) ================= -->
+    <section id="deliveryView" class="hidden space-y-6">
+      <div class="glass p-4 rounded-2xl flex flex-wrap justify-between items-center gap-4 border-r-4 border-amber-400">
+        <div class="flex items-center gap-3">
+          <img id="agentHeaderPhoto" src="https://via.placeholder.com/60" alt="Agent" class="w-14 h-14 rounded-full object-cover border-2 border-amber-400" />
+          <div>
+            <h2 class="font-bold text-lg text-white">مندوب التوصيل: <span id="agentHeaderName" class="text-amber-400"></span></h2>
+            <p class="text-xs text-slate-400" id="agentGpsStatusText">📍 موقعك الحالي غير مفعل</p>
+          </div>
+        </div>
+        <button onclick="updateAgentLiveGPS()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-lg">
+          📡 تحديث وبث موقعي المباشر (GPS) للمالك والزبون
+        </button>
+      </div>
+
+      <div class="glass p-5 rounded-2xl space-y-4">
+        <h3 class="font-bold text-amber-400">🛵 الأوردرات الجاهزة للاستلام والتوصيل</h3>
+        <div id="agentOrdersList" class="space-y-4"></div>
+      </div>
+
+      <div class="glass p-5 rounded-2xl space-y-4">
+        <h3 class="font-bold text-purple-400">🔄 مرتجعات مطلوبة للاستلام من العملاء</h3>
+        <div id="agentReturnsList" class="space-y-3"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MESSAGES MODAL (تواصل بالمحل) ================= -->
+  <div id="messagesModal" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4">
+    <div class="glass w-full max-w-lg rounded-2xl p-5 space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+        <h3 class="font-bold text-cyan-400">💬 رسائل التواصل مع المحل</h3>
+        <button onclick="closeCustomerMessagesModal()" class="text-slate-400 hover:text-white text-lg">✖</button>
+      </div>
+      <div id="customerMessagesList" class="max-h-80 overflow-y-auto space-y-2 p-2 bg-slate-900/70 rounded-xl"></div>
+      <div class="flex gap-2">
+        <input type="text" id="custReplyInput" placeholder="اكتب ردك أو رسالتك للمحل..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm" />
+        <button onclick="sendCustomerReply()" class="bg-cyan-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs">إرسال</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HIDDEN PRINT AREA -->
+  <div id="printArea" class="hidden"></div>
+
+  <!-- ================= APPLICATION JAVASCRIPT ================= -->
+  <script>
+    const STORAGE_KEY = 'B2B_MOBILE_PARTS_CLEAN_V1';
+    let currentLang = 'ar';
+    let currentUser = null;
+    let cart = [];
+    let editingOrderId = null;
+
+    // Clean initial state (No dummy products or accounts except default Owner)
+    function getInitialData() {
+      return {
+        settings: {
+          storeName: 'مركز جملة قطع غيار الموبايلات',
+          walletNumber: '01000000000',
+          urgentFee: 50
+        },
+        users: [
+          {
+            id: 'owner-1',
+            name: 'المالك الرئيسي',
+            shopName: 'الإدارة',
+            phone: 'admin',
+            password: '123456',
+            role: 'owner',
+            status: 'active',
+            address: 'المقر الرئيسي',
+            gps: '30.0444, 31.2357',
+            photo: 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
+            balance: 0,
+            lastGpsUpdate: null
+          }
+        ],
+        products: [],
+        orders: [],
+        returns: [],
+        missingRequests: [],
+        messages: []
+      };
+    }
+
+    const COLS = ['users','products','orders','returns','missingRequests','messages'];
+    const clone = (x) => JSON.parse(JSON.stringify(x));
+    function emptyDB() {
+      return { settings: { storeName: 'مركز جملة قطع غيار الموبايلات', walletNumber: '', urgentFee: 0 }, users: [], products: [], orders: [], returns: [], missingRequests: [], messages: [] };
+    }
+    let db = emptyDB();
+    let baseDB = clone(db);
+    let token = '';
+    try { token = localStorage.getItem('B2B_TOKEN') || sessionStorage.getItem('B2B_TOKEN') || ''; } catch (e) {}
+    let serverVer = 0, saving = false, pendingSave = false, pollTimer = null;
+
+    function setToken(t, persist) {
+      token = t || '';
+      try {
+        localStorage.removeItem('B2B_TOKEN'); sessionStorage.removeItem('B2B_TOKEN');
+        if (t) (persist ? localStorage : sessionStorage).setItem('B2B_TOKEN', t);
+      } catch (e) {}
+    }
+
+    async function api(path, body) {
+      const opt = body === undefined ? { method: 'GET', headers: {} } : { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } };
+      if (token) opt.headers.Authorization = 'Bearer ' + token;
+      let res;
+      try { res = await fetch('/api' + path, opt); } catch (e) { return { ok: false, status: 0, error: 'تعذر الاتصال بالسيرفر' }; }
+      let data = {};
+      try { data = await res.json(); } catch (e) {}
+      return Object.assign({ ok: res.ok, status: res.status }, data);
+    }
+
+    function applyState(r) {
+      const st = r.state || emptyDB();
+      for (const c of COLS) if (!Array.isArray(st[c])) st[c] = [];
+      if (!st.settings) st.settings = emptyDB().settings;
+      db = st;
+      baseDB = clone(db);
+      serverVer = r.ver || 0;
+    }
+
+    function computePatch(base, cur) {
+      const ops = [];
+      const sf = {};
+      for (const k of Object.keys(cur.settings)) if (JSON.stringify(cur.settings[k]) !== JSON.stringify(base.settings[k])) sf[k] = cur.settings[k];
+      if (Object.keys(sf).length) ops.push({ c: 'settings', op: 'set', f: sf });
+      for (const c of COLS) {
+        const bm = new Map(base[c].map(x => [String(x.id), x]));
+        const seen = new Set();
+        for (const it of cur[c]) {
+          const id = String(it.id); seen.add(id);
+          const b = bm.get(id);
+          if (!b) ops.push({ c, op: 'add', item: it });
+          else {
+            const f = {};
+            for (const k of Object.keys(it)) if (JSON.stringify(it[k]) !== JSON.stringify(b[k])) f[k] = it[k];
+            if (Object.keys(f).length) ops.push({ c, op: 'set', id: it.id, f });
+          }
+        }
+        for (const [id, b] of bm) if (!seen.has(id)) ops.push({ c, op: 'del', id: b.id });
+      }
+      return ops;
+    }
+
+    function saveDB() {
+      refreshAllViews();
+      pushChanges();
+    }
+
+    async function pushChanges() {
+      if (!token) return;
+      if (saving) { pendingSave = true; return; }
+      const ops = computePatch(baseDB, db);
+      if (!ops.length) return;
+      saving = true;
+      const snap = clone(db);
+      const r = await api('/save', { ops });
+      saving = false;
+      if (!r.ok) {
+        if (r.status === 401) { showToast('انتهت الجلسة، سجّل الدخول من جديد'); return logout(); }
+        showToast('⚠️ تعذر حفظ التغييرات: ' + (r.error || ''));
+        pendingSave = false;
+        await pullState(true);
+        return;
+      }
+      if (pendingSave) { pendingSave = false; baseDB = snap; pushChanges(); }
+      else { applyState(r); syncCurrentUser(); refreshAllViews(); }
+    }
+
+    function syncCurrentUser() {
+      if (!currentUser) return;
+      const prev = currentUser.status;
+      currentUser = db.users.find(u => u.id === currentUser.id) || currentUser;
+      if (currentUser.status !== prev) enterPortal();
+    }
+
+    async function pullState(force) {
+      if (!token || saving) return;
+      const r = await api('/state' + (force ? '' : '?v=' + serverVer));
+      if (r.status === 401) return logout();
+      if (!r.ok || r.unchanged) return;
+      applyState(r);
+      syncCurrentUser();
+      refreshAllViews();
+    }
+
+    function startPolling() {
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(() => { if (!document.hidden) pullState(false); }, 8000);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.remove('hidden');
+      setTimeout(() => t.classList.add('hidden'), 3500);
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'ar' ? 'en' : 'ar';
+      const root = document.getElementById('htmlRoot');
+      root.lang = currentLang;
+      root.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+      showToast(currentLang === 'ar' ? 'تم التبديل للغة العربية' : 'Switched to English Mode');
+    }
+
+    // Encode uploaded image file to Base64
+    function encodeImageToInput(event, targetInputId) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const max = 480, k = Math.min(1, max / Math.max(img.width, img.height));
+          const cv = document.createElement('canvas');
+          cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+          cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+          document.getElementById(targetInputId).value = cv.toDataURL('image/jpeg', 0.72);
+          showToast('تم تجهيز الصورة بنجاح');
+        };
+        img.onerror = function() { document.getElementById(targetInputId).value = e.target.result; };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function detectUserGPS(inputId) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          document.getElementById(inputId).value = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+          showToast('📍 تم التقاط موقعك الجغرافي بنجاح');
+        }, () => {
+          document.getElementById(inputId).value = '30.0444, 31.2357';
+          showToast('تم وضع إحداثيات افتراضية، يمكنك تعديلها');
+        });
+      }
+    }
+
+    // ================= AUTHENTICATION & REMEMBER ME =================
+    function switchAuthTab(tab) {
+      document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+      document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+      document.getElementById('tabLoginBtn').className = tab === 'login' ? 'flex-1 py-2.5 font-bold text-cyan-400 border-b-2 border-cyan-400' : 'flex-1 py-2.5 font-bold text-slate-400';
+      document.getElementById('tabRegBtn').className = tab === 'register' ? 'flex-1 py-2.5 font-bold text-cyan-400 border-b-2 border-cyan-400' : 'flex-1 py-2.5 font-bold text-slate-400';
+    }
+
+    async function startSession(r, persist) {
+      setToken(r.token, persist);
+      applyState(r);
+      currentUser = db.users.find(u => u.id === r.me);
+      if (!currentUser) return showToast('تعذر تحميل الحساب');
+      enterPortal();
+      startPolling();
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('loginUser').value.trim();
+      const p = document.getElementById('loginPass').value.trim();
+      const remember = document.getElementById('rememberMe').checked;
+      const r = await api('/login', { user: u, pass: p });
+      if (!r.ok) return showToast('❌ ' + (r.error || 'بيانات الدخول أو كلمة المرور غير صحيحة'));
+      document.getElementById('loginPass').value = '';
+      await startSession(r, remember);
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const r = await api('/register', {
+        name: document.getElementById('regName').value.trim(),
+        shopName: document.getElementById('regShop').value.trim(),
+        phone: document.getElementById('regPhone').value.trim(),
+        password: document.getElementById('regPass').value.trim(),
+        address: document.getElementById('regAddress').value.trim(),
+        gps: document.getElementById('regGps').value.trim()
+      });
+      if (!r.ok) return showToast('⚠️ ' + (r.error || 'تعذر التسجيل'));
+      await startSession(r, true);
+      showToast('✅ تم تسجيل حسابك وهو الآن بانتظار موافقة المالك أو المساعد');
+    }
+
+    function logout() {
+      currentUser = null;
+      setToken('');
+      if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+      db = emptyDB(); baseDB = clone(db);
+      document.getElementById('storeTitleDisplay').textContent = db.settings.storeName;
+      document.getElementById('authView').classList.remove('hidden');
+      document.getElementById('pendingView').classList.add('hidden');
+      document.getElementById('adminStaffView').classList.add('hidden');
+      document.getElementById('customerView').classList.add('hidden');
+      document.getElementById('deliveryView').classList.add('hidden');
+      document.getElementById('logoutBtn').classList.add('hidden');
+      document.getElementById('customerMsgBtn').classList.add('hidden');
+      document.getElementById('roleBadge').textContent = 'بوابة الدخول الذكية';
+    }
+
+    function enterPortal() {
+      // Sync latest user record
+      currentUser = db.users.find(u => u.id === currentUser.id) || currentUser;
+      document.getElementById('authView').classList.add('hidden');
+      document.getElementById('pendingView').classList.add('hidden');
+      document.getElementById('adminStaffView').classList.add('hidden');
+      document.getElementById('customerView').classList.add('hidden');
+      document.getElementById('deliveryView').classList.add('hidden');
+      document.getElementById('logoutBtn').classList.remove('hidden');
+      document.getElementById('customerMsgBtn').classList.add('hidden');
+
+      if (currentUser.role === 'customer') {
+        if (currentUser.status !== 'active') {
+          document.getElementById('pendingView').classList.remove('hidden');
+          document.getElementById('roleBadge').textContent = 'حساب زبون قيد المراجعة';
+          return;
+        }
+        document.getElementById('customerView').classList.remove('hidden');
+        document.getElementById('customerMsgBtn').classList.remove('hidden');
+        document.getElementById('roleBadge').textContent = `واجهة الزبون: ${currentUser.shopName}`;
+      } else if (currentUser.role === 'owner' || currentUser.role === 'staff') {
+        document.getElementById('adminStaffView').classList.remove('hidden');
+        document.getElementById('roleBadge').textContent = currentUser.role === 'owner' ? `👑 لوحة المالك: ${currentUser.name}` : `🛠️ لوحة المساعد: ${currentUser.name}`;
+        document.getElementById('ownerOnlyTeamTab').classList.toggle('hidden', currentUser.role !== 'owner');
+        document.getElementById('dailySalesCard').classList.toggle('hidden', currentUser.role !== 'owner');
+      } else if (currentUser.role === 'delivery') {
+        document.getElementById('deliveryView').classList.remove('hidden');
+        document.getElementById('roleBadge').textContent = `🛵 واجهة مندوب التوصيل: ${currentUser.name}`;
+      }
+      refreshAllViews();
+    }
+
+    // ================= DYNAMIC DAILY SALES CALCULATION =================
+    function calculateDailySales() {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      return db.orders
+        .filter(o => o.status !== 'canceled' && o.createdAt.slice(0, 10) === todayStr)
+        .reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
+    }
+
+    function refreshAllViews() {
+      document.getElementById('storeTitleDisplay').textContent = db.settings.storeName;
+      if (!currentUser) return;
+
+      if (currentUser.role === 'owner' || currentUser.role === 'staff') {
+        document.getElementById('statDailySales').textContent = calculateDailySales();
+        document.getElementById('statActiveOrders').textContent = db.orders.filter(o => o.status !== 'canceled' && o.status !== 'delivered').length;
+        document.getElementById('statPendingCustomers').textContent = db.users.filter(u => u.role === 'customer' && u.status === 'pending').length;
+        document.getElementById('statWalletDisplay').textContent = db.settings.walletNumber || 'غير محدد';
+        document.getElementById('statUrgentFee').textContent = db.settings.urgentFee || 0;
+
+        document.getElementById('setStoreName').value = db.settings.storeName;
+        document.getElementById('setWalletNumber').value = db.settings.walletNumber;
+        document.getElementById('setUrgentFee').value = db.settings.urgentFee;
+
+        renderAdminOrders();
+        renderAdminProducts();
+        renderAdminCustomers();
+        renderAdminTrackingAndReturns();
+        if (currentUser.role === 'owner') renderTeamMembers();
+      } else if (currentUser.role === 'customer') {
+        currentUser = db.users.find(u => u.id === currentUser.id) || currentUser;
+        document.getElementById('custWelcomeName').textContent = `${currentUser.name} (${currentUser.shopName})`;
+        document.getElementById('custWalletNumberDisplay').textContent = db.settings.walletNumber;
+        document.getElementById('custBalanceDue').textContent = `${currentUser.balance || 0} ج.م`;
+        document.getElementById('custUrgentFeeText').textContent = db.settings.urgentFee || 0;
+        const myMsgs = db.messages.filter(m => m.customerId === currentUser.id);
+        document.getElementById('unreadMsgBadge').textContent = myMsgs.length;
+        renderCustomerProducts();
+        renderCart();
+        renderCustomerOrders();
+      } else if (currentUser.role === 'delivery') {
+        currentUser = db.users.find(u => u.id === currentUser.id) || currentUser;
+        document.getElementById('agentHeaderName').textContent = currentUser.name;
+        document.getElementById('agentHeaderPhoto').src = currentUser.photo || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+        document.getElementById('agentGpsStatusText').textContent = currentUser.lastGpsUpdate ? `📍 آخر تحديث للموقع: ${currentUser.gps} (${currentUser.lastGpsUpdate})` : `📍 الإحداثيات: ${currentUser.gps || 'غير محدد'}`;
+        renderAgentPortal();
+      }
+    }
+
+    function switchAdminTab(tab) {
+      ['orders', 'products', 'customers', 'tracking', 'team'].forEach(t => {
+        document.getElementById('admin' + t.charAt(0).toUpperCase() + t.slice(1) + 'Section').classList.toggle('hidden', t !== tab);
+      });
+    }
+
+    // ================= PRODUCTS MANAGEMENT (CATEGORIES, DESC, IMAGES, NO QUANTITIES) =================
+    function saveProduct(e) {
+      e.preventDefault();
+      const id = document.getElementById('prodId').value || ('prod-' + Date.now());
+      const prodObj = {
+        id,
+        model: document.getElementById('prodModel').value.trim(),
+        category: document.getElementById('prodCategory').value.trim(),
+        name: document.getElementById('prodName').value.trim(),
+        price: Number(document.getElementById('prodPrice').value),
+        colors: document.getElementById('prodColors').value.split(',').map(s => s.trim()).filter(Boolean),
+        status: document.getElementById('prodStatus').value,
+        desc: document.getElementById('prodDesc').value.trim(),
+        image: document.getElementById('prodImg').value.trim() || 'https://placehold.co/300x200/1e293b/38bdf8?text=Spare+Part',
+        isOffer: document.getElementById('prodOffer').checked,
+        isNew: document.getElementById('prodNew').checked
+      };
+
+      const idx = db.products.findIndex(p => p.id === id);
+      if (idx >= 0) db.products[idx] = prodObj;
+      else db.products.push(prodObj);
+
+      document.getElementById('productForm').reset();
+      document.getElementById('prodId').value = '';
+      saveDB();
+      showToast('✅ تم حفظ الصنف وإظهاره في شاشة الزبون');
+    }
+
+    function editProduct(id) {
+      const p = db.products.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('prodId').value = p.id;
+      document.getElementById('prodModel').value = p.model;
+      document.getElementById('prodCategory').value = p.category;
+      document.getElementById('prodName').value = p.name;
+      document.getElementById('prodPrice').value = p.price;
+      document.getElementById('prodColors').value = (p.colors || []).join(', ');
+      document.getElementById('prodStatus').value = p.status;
+      document.getElementById('prodDesc').value = p.desc;
+      document.getElementById('prodImg').value = p.image;
+      document.getElementById('prodOffer').checked = p.isOffer;
+      document.getElementById('prodNew').checked = p.isNew;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteProduct(id) {
+      db.products = db.products.filter(p => p.id !== id);
+      saveDB();
+      showToast('🗑️ تم حذف الصنف');
+    }
+
+    function renderAdminProducts() {
+      const container = document.getElementById('adminProductsList');
+      if (db.products.length === 0) {
+        container.innerHTML = `<div class="col-span-3 glass p-6 rounded-2xl text-center text-slate-400 text-sm">لا توجد منتجات حالياً. أضف أصنافاً من النموذج أعلاه أو ارفع شيت Excel.</div>`;
+        return;
+      }
+      container.innerHTML = db.products.map(p => `
+        <div class="glass p-4 rounded-2xl flex flex-col justify-between gap-3">
+          <div class="flex gap-3">
+            <img src="${p.image}" class="w-20 h-20 rounded-xl object-cover border border-slate-700" />
+            <div class="flex-1">
+              <span class="text-[10px] bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded">${p.model} | ${p.category}</span>
+              <h4 class="font-bold text-sm text-white mt-1">${p.name}</h4>
+              <p class="text-xs text-slate-400">${p.desc || ''}</p>
+              <p class="text-emerald-400 font-bold text-sm mt-1">${p.price} ج.م</p>
+            </div>
+          </div>
+          <div class="flex justify-end gap-2 border-t border-slate-800 pt-2">
+            <button onclick="editProduct('${p.id}')" class="bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded-lg text-xs">تعديل</button>
+            <button onclick="deleteProduct('${p.id}')" class="bg-red-600/30 hover:bg-red-600 text-red-200 px-3 py-1 rounded-lg text-xs">حذف</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Excel Import/Export for Products
+    function exportProductsExcel() {
+      const rows = db.products.map(p => ({
+        Model: p.model, Category: p.category, Name: p.name, Price: p.price,
+        Colors: (p.colors || []).join(','), Status: p.status, Description: p.desc
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Products');
+      XLSX.writeFile(wb, 'SpareParts_Products.xlsx');
+    }
+
+    function importProductsExcel(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const wb = XLSX.read(evt.target.result, { type: 'binary' });
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+        rows.forEach(r => {
+          db.products.push({
+            id: 'prod-' + Date.now() + Math.random().toString(36).slice(2, 6),
+            model: r.Model || 'عام',
+            category: r.Category || 'قطع غيار',
+            name: r.Name || 'صنف جديد',
+            price: Number(r.Price || 0),
+            colors: r.Colors ? String(r.Colors).split(',') : [],
+            status: r.Status || 'available',
+            desc: r.Description || '',
+            image: 'https://placehold.co/300x200/1e293b/38bdf8?text=Part',
+            isOffer: false,
+            isNew: true
+          });
+        });
+        saveDB();
+        showToast(`✅ تم استيراد ${rows.length} صنف بنجاح`);
+      };
+      reader.readAsBinaryString(file);
+    }
+
+    // ================= CUSTOMER PORTAL PRODUCTS & CART =================
+    function renderCustomerProducts() {
+      const q = (document.getElementById('custSearchInput').value || '').trim().toLowerCase();
+      const grid = document.getElementById('customerProductsGrid');
+      const filtered = db.products.filter(p =>
+        !q || p.model.toLowerCase().includes(q) || p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
+      );
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-3 glass p-8 rounded-2xl text-center text-slate-400 text-sm">لا توجد أصناف مطابقة حالياً.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => {
+        const badge = p.status === 'available'
+          ? '<span class="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">🟢 متوفر</span>'
+          : p.status === 'low'
+          ? '<span class="text-[10px] bg-amber-950 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full">🟠 أوشك على النفاذ</span>'
+          : '<span class="text-[10px] bg-rose-950 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full">🔴 نفذت الكمية</span>';
+
+        const colorOptions = (p.colors && p.colors.length > 0)
+          ? `<select id="color-${p.id}" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs w-full mt-2">
+               ${p.colors.map(c => `<option value="${c}">${c}</option>`).join('')}
+             </select>`
+          : `<input type="hidden" id="color-${p.id}" value="الافتراضي" />`;
+
+        return `
+          <div class="glass rounded-2xl overflow-hidden flex flex-col justify-between border border-slate-800 hover:border-cyan-500/50 transition">
+            <div>
+              <div class="relative">
+                <img src="${p.image}" alt="${p.name}" class="w-full h-44 object-cover bg-slate-900" />
+                <div class="absolute top-2 right-2 flex gap-1">
+                  ${p.isOffer ? '<span class="bg-rose-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">🔥 عرض خاص</span>' : ''}
+                  ${p.isNew ? '<span class="bg-cyan-500 text-slate-950 text-[10px] font-bold px-2 py-0.5 rounded">✨ جديد</span>' : ''}
+                </div>
+              </div>
+              <div class="p-4 space-y-1.5">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold text-cyan-400">${p.model} - ${p.category}</span>
+                  ${badge}
+                </div>
+                <h4 class="font-bold text-base text-white">${p.name}</h4>
+                <p class="text-xs text-slate-400">${p.desc || 'بدون وصف إضافي'}</p>
+                ${colorOptions}
+              </div>
+            </div>
+            <div class="p-4 pt-0 flex items-center justify-between gap-2">
+              <span class="text-lg font-bold text-emerald-400">${p.price} ج.م</span>
+              ${p.status !== 'out'
+                ? `<button onclick="addToCart('${p.id}')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs">➕ أضف للأوردر</button>`
+                : `<button onclick="promptMissingPart('${p.model} - ${p.name}')" class="bg-slate-700 text-slate-300 px-3 py-2 rounded-xl text-xs">🔔 نبهني عند التوفر</button>`}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addToCart(prodId) {
+      const p = db.products.find(x => x.id === prodId);
+      if (!p) return;
+      const colorEl = document.getElementById('color-' + prodId);
+      const color = colorEl ? colorEl.value : 'افتراضي';
+      const existing = cart.find(i => i.productId === prodId && i.color === color);
+      if (existing) existing.qty += 1;
+      else cart.push({ productId: p.id, name: `${p.model} - ${p.name}`, color, price: p.price, qty: 1 });
+      renderCart();
+      showToast('🛒 تمت الإضافة لسلة الأوردر');
+    }
+
+    function updateCartQty(idx, delta) {
+      cart[idx].qty += delta;
+      if (cart[idx].qty <= 0) cart.splice(idx, 1);
+      renderCart();
+    }
+
+    function renderCart() {
+      document.getElementById('cartCountBadge').textContent = cart.reduce((s, i) => s + i.qty, 0);
+      const container = document.getElementById('cartItemsContainer');
+      const isUrgent = document.getElementById('orderUrgentCheckbox').checked;
+      const urgentFee = isUrgent ? Number(db.settings.urgentFee || 0) : 0;
+
+      if (cart.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 py-2">السلة فارغة حالياً، اختر الأصناف من الأعلى لإرسال أوردر.</p>`;
+        document.getElementById('cartTotalDisplay').textContent = '0';
+        return;
+      }
+
+      const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      document.getElementById('cartTotalDisplay').textContent = subtotal + urgentFee;
+
+      container.innerHTML = cart.map((item, idx) => `
+        <div class="flex justify-between items-center bg-slate-900/90 px-3 py-2 rounded-xl border border-slate-800">
+          <div>
+            <span class="font-bold text-white">${item.name}</span>
+            <span class="text-xs text-cyan-400 mr-2">(${item.color})</span>
+            <span class="text-xs text-emerald-400 block">${item.price} ج.م × ${item.qty} = ${item.price * item.qty} ج.م</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="updateCartQty(${idx}, -1)" class="bg-slate-800 px-2.5 py-1 rounded-lg font-bold">-</button>
+            <span class="font-bold">${item.qty}</span>
+            <button onclick="updateCartQty(${idx}, 1)" class="bg-slate-800 px-2.5 py-1 rounded-lg font-bold">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function scrollToCartForm() {
+      document.getElementById('customerOrderFormCard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Submit New Order OR Save Edited Confirmed Order
+    function submitCustomerOrder() {
+      if (cart.length === 0) return showToast('⚠️ أضف صنفاً واحداً على الأقل لإرسال الأوردر');
+      const isUrgent = document.getElementById('orderUrgentCheckbox').checked;
+      const urgentFee = isUrgent ? Number(db.settings.urgentFee || 0) : 0;
+      const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      const deliveryMethod = document.getElementById('orderDeliveryMethod').value;
+      const paymentMethod = document.getElementById('orderPaymentMethod').value;
+      const notes = document.getElementById('orderCustomerNotes').value.trim();
+
+      if (editingOrderId) {
+        const ord = db.orders.find(o => o.id === editingOrderId);
+        if (ord) {
+          const oldTotal = ord.totalAmount;
+          ord.items = [...cart];
+          ord.isUrgent = isUrgent;
+          ord.urgentFee = urgentFee;
+          ord.subtotal = subtotal;
+          ord.deliveryMethod = deliveryMethod;
+          ord.paymentMethod = paymentMethod;
+          ord.notes = notes;
+          ord.totalAmount = subtotal + urgentFee + Number(ord.shippingCost || 0);
+          // Adjust customer balance difference
+          currentUser.balance = Number(currentUser.balance || 0) + (ord.totalAmount - oldTotal);
+        }
+        cancelOrderEditMode();
+        saveDB();
+        showToast('✅ تم تعديل الأوردر المؤكد وتحديث الفاتورة بنجاح');
+        return;
+      }
+
+      const newOrder = {
+        id: 'ORD-' + Math.floor(10000 + Math.random() * 90000),
+        customerId: currentUser.id,
+        customerName: currentUser.name,
+        shopName: currentUser.shopName,
+        customerPhone: currentUser.phone,
+        customerAddress: currentUser.address,
+        customerGps: currentUser.gps,
+        items: [...cart],
+        subtotal,
+        urgentFee,
+        isUrgent,
+        shippingCost: 0,
+        totalAmount: subtotal + urgentFee,
+        deliveryMethod,
+        paymentMethod,
+        notes,
+        status: 'new', // new, preparing, waiting_agent, handed_to_agent, delivered, canceled
+        handoverEnabled: false,
+        agentConfirmedPickup: false,
+        agentPickupTime: null,
+        agentId: null,
+        agentName: null,
+        agentPhoto: null,
+        agentDeliveryCollectionType: null,
+        customerConfirmedReceipt: false,
+        agentConfirmedCustomerReceipt: false,
+        walletConfirmed: false,
+        createdAt: new Date().toISOString()
+      };
+
+      db.orders.unshift(newOrder);
+      currentUser.balance = Number(currentUser.balance || 0) + newOrder.totalAmount;
+      cart = [];
+      document.getElementById('orderCustomerNotes').value = '';
+      document.getElementById('orderUrgentCheckbox').checked = false;
+      saveDB();
+      showToast('🚀 تم إرسال الأوردر بنجاح وظهر فوراً عند المالك والمساعدين');
+    }
+
+    function loadOrderIntoEditMode(orderId) {
+      const ord = db.orders.find(o => o.id === orderId);
+      if (!ord || ord.status === 'canceled') return;
+      editingOrderId = ord.id;
+      cart = JSON.parse(JSON.stringify(ord.items));
+      document.getElementById('orderDeliveryMethod').value = ord.deliveryMethod;
+      document.getElementById('orderPaymentMethod').value = ord.paymentMethod;
+      document.getElementById('orderCustomerNotes').value = ord.notes || '';
+      document.getElementById('orderUrgentCheckbox').checked = !!ord.isUrgent;
+      document.getElementById('editingOrderBadge').classList.remove('hidden');
+      document.getElementById('cancelEditOrderBtn').classList.remove('hidden');
+      document.getElementById('cartFormTitle').textContent = `✏️ تعديل الأوردر رقم ${ord.id}`;
+      renderCart();
+      scrollToCartForm();
+    }
+
+    function cancelOrderEditMode() {
+      editingOrderId = null;
+      cart = [];
+      document.getElementById('editingOrderBadge').classList.add('hidden');
+      document.getElementById('cancelEditOrderBtn').classList.add('hidden');
+      document.getElementById('cartFormTitle').textContent = '🛒 سلة الطلب وإرسال أوردر جديد';
+      renderCart();
+    }
+
+    // Customer Cancel Order After Sending (Deducts from balance & daily sales automatically)
+    function cancelOrderByCustomer(orderId) {
+      const ord = db.orders.find(o => o.id === orderId);
+      if (!ord || ord.status === 'canceled') return;
+      ord.status = 'canceled';
+      const cust = db.users.find(u => u.id === ord.customerId);
+      if (cust) cust.balance = Math.max(0, Number(cust.balance || 0) - Number(ord.totalAmount || 0));
+      saveDB();
+      showToast('❌ تم إلغاء الأوردر وخصمه تلقائياً من الرصيد والمبيعات اليومية');
+    }
+
+    function switchOrderDeliveryMethodLive(orderId, newMethod) {
+      const ord = db.orders.find(o => o.id === orderId);
+      if (!ord) return;
+      ord.deliveryMethod = newMethod;
+      saveDB();
+      showToast('🔄 تم تعديل طريقة استلام الأوردر بنجاح');
+    }
+
+    function customerConfirmOrderReceived(orderId) {
+      const ord = db.orders.find(o => o.id === orderId);
+      if (!ord) return;
+      ord.customerConfirmedReceipt = true;
+      if (ord.agentConfirmedCustomerReceipt) ord.status = 'delivered';
+      saveDB();
+      showToast('✅ تم تأكيد استلامك للأوردر من المندوب');
+    }
+
+    function renderCustomerOrders() {
+      const container = document.getElementById('customerOrdersList');
+      const myOrders = db.orders.filter(o => o.customerId === currentUser.id);
+      if (myOrders.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400">لا توجد أوردرات سابقة حتى الآن.</p>`;
+        return;
+      }
+
+      container.innerHTML = myOrders.map(o => {
+        const assignedAgent = db.users.find(u => u.id === o.agentId);
+        const statusLabels = {
+          new: '🆕 قيد المراجعة',
+          preparing: '🛠️ يتم التجهيز',
+          waiting_agent: '📦 تم التجهيز وبانتظار مندوب التوصيل',
+          handed_to_agent: '🛵 تم التسليم لمندوب التوصيل (جاري التوصيل)',
+          delivered: '✅ تم التسليم بالكامل',
+          canceled: '❌ أوردر ملغي'
+        };
+
+        return `
+          <div class="bg-slate-900/90 border ${o.isUrgent ? 'border-rose-500' : 'border-slate-800'} p-4 rounded-2xl space-y-3">
+            <div class="flex flex-wrap justify-between items-center gap-2">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-cyan-400">${o.id}</span>
+                ${o.isUrgent ? '<span class="bg-rose-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">🚨 مستعجل (+' + o.urgentFee + ' ج.م)</span>' : ''}
+                <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-lg">${statusLabels[o.status] || o.status}</span>
+              </div>
+              <div class="text-sm font-bold text-emerald-400">
+                الإجمالي: ${o.totalAmount} ج.م (شحن: ${o.shippingCost} ج.م)
+              </div>
+            </div>
+
+            <div class="text-xs text-slate-300 space-y-1">
+              <p>الأصناف: ${o.items.map(i => `${i.name} (${i.color}) ×${i.qty}`).join(' ، ')}</p>
+              ${o.notes ? `<p class="text-amber-300">📝 ملاحظاتك: ${o.notes}</p>` : ''}
+            </div>
+
+            <!-- Assigned Delivery Agent Photo & Live GPS for Customer -->
+            ${assignedAgent ? `
+              <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-800/80 p-3 rounded-xl border border-amber-500/30">
+                <div class="flex items-center gap-3">
+                  <img src="${assignedAgent.photo || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" class="w-12 h-12 rounded-full object-cover border-2 border-amber-400" />
+                  <div class="text-xs">
+                    <p class="font-bold text-amber-300">مندوب التوصيل: ${assignedAgent.name}</p>
+                    <p class="text-slate-300">موبايل المندوب: ${assignedAgent.phone}</p>
+                    <p class="text-cyan-300">📍 موقع المندوب الحالي: ${assignedAgent.gps || 'قيد التحديث'}</p>
+                  </div>
+                </div>
+                <a href="https://www.google.com/maps?q=${encodeURIComponent(assignedAgent.gps || '')}" target="_blank" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-xl text-xs font-bold">
+                  🗺️ تتبع مكان المندوب على الخريطة
+                </a>
+              </div>
+            ` : ''}
+
+            ${o.status !== 'canceled' ? `
+              <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800">
+                <select onchange="switchOrderDeliveryMethodLive('${o.id}', this.value)" class="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-xs">
+                  <option value="delivery" ${o.deliveryMethod === 'delivery' ? 'selected' : ''}>توصيل مندوب</option>
+                  <option value="pickup" ${o.deliveryMethod === 'pickup' ? 'selected' : ''}>استلام من المحل</option>
+                </select>
+
+                <button onclick="loadOrderIntoEditMode('${o.id}')" class="bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 border border-amber-500/40 px-3 py-1.5 rounded-xl text-xs font-bold">
+                  ✏️ تعديل أصناف/ملاحظات الأوردر
+                </button>
+
+                <button onclick=" customerConfirmOrderReceived('${o.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold">
+                  ${o.customerConfirmedReceipt ? '✅ تم تأكيد استلامك' : '📦 زر استلام الأوردر من المندوب'}
+                </button>
+
+                <button onclick="requestOrderReturn('${o.id}')" class="bg-purple-600/30 hover:bg-purple-600 text-purple-200 px-3 py-1.5 rounded-xl text-xs font-bold">
+                  🔄 طلب مرتجع
+                </button>
+
+                <button onclick="cancelOrderByCustomer('${o.id}')" class="mr-auto bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold">
+                  ❌ إلغاء الأوردر
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ================= OWNER & STAFF ORDER MANAGEMENT =================
+    function updateOrderStatus(orderId, newStatus) {
+      const ord = db.orders.find(o => o.id === orderId);
+      if (!ord) return;
+      ord.status = newStatus;
+      saveDB();
+      showToast(`✅ تم تحديث حالة الأوردر ${ord.id}`);
+    }
+
+    function enableOrderHandoverToAgent(orderId) {
+      const ord = db.orders.find(o => o.id === orderId);
+      if (!ord) return;
+      const agentSelect = document.getElementById('assignAgent-' + orderId);
+      const selectedAgentId = agentSelect ? agentSelect.value : null;
+      const agentObj = db.users.find(u => u.id === selectedAgentId);
+      if (!agentObj) return showToast('⚠️ اختر مندوب التوصيل أولاً');
+
+      ord.agentId = agentObj.id;
+      ord.agentName = agentObj.name;
+      ord.agentPhoto = agentObj.photo;
+      ord.handoverEnabled = true;
+      ord.status = 'waiting_agent';
+      saveDB();
+      showToast(`🛵 تم تمكين استلام الأوردر للمندوب: ${agentObj.name}`);
+    }
+
+    function confirmWalletTransferForOrder(orderId) {
+      const ord = db.orders.find(o => o.id === orderId);
+      if (!ord || ord.walletConfirmed) return;
+      ord.walletConfirmed = true;
+      const cust = db.users.find(u => u.id === ord.customerId);
+      if (cust) {
+        cust.balance = Math.max(0, Number(cust.balance || 0) - Number(ord.totalAmount || 0));
+      }
+      saveDB();
+      showToast('📲 تم تأكيد استلام تحويل المحفظة وخصم المبلغ من الرصيد المستحق على العميل');
+    }
+
+    function deleteOrderByAdmin(orderId) {
+      const ord = db.orders.find(o => o.id === orderId);
+      if (!ord) return;
+      if (ord.status !== 'canceled' && !ord.walletConfirmed) {
+        const cust = db.users.find(u => u.id === ord.customerId);
+        if (cust) cust.balance = Math.max(0, Number(cust.balance || 0) - Number(ord.totalAmount || 0));
+      }
+      db.orders = db.orders.filter(o => o.id !== orderId);
+      saveDB();
+      showToast('🗑️ تم حذف الفاتورة وخصمها تلقائياً من المبيعات اليومية');
+    }
+
+    function renderAdminOrders() {
+      const container = document.getElementById('adminOrdersList');
+      const agents = db.users.filter(u => u.role === 'delivery');
+      const sorted = [...db.orders].sort((a, b) => (b.isUrgent ? 1 : 0) - (a.isUrgent ? 1 : 0));
+
+      if (sorted.length === 0) {
+        container.innerHTML = `<div class="glass p-8 rounded-2xl text-center text-slate-400 text-sm">لا توجد أوردرات حالياً.</div>`;
+        return;
+      }
+
+      container.innerHTML = sorted.map(o => `
+        <div class="glass p-5 rounded-2xl border-r-4 ${o.status === 'canceled' ? 'border-slate-600 opacity-60' : o.isUrgent ? 'border-rose-500' : 'border-cyan-500'} space-y-3">
+          <div class="flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-base text-cyan-400">${o.id}</span>
+              ${o.isUrgent ? `<span class="bg-rose-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">🚨 أوردر مستعجل (+${o.urgentFee} ج.م)</span>` : ''}
+              <span class="text-xs bg-slate-800 text-amber-300 px-2.5 py-1 rounded-lg font-semibold">الحالة: ${o.status}</span>
+            </div>
+            <div class="text-xs text-slate-300">
+              <span>🏪 ${o.shopName} (${o.customerName}) - 📞 ${o.customerPhone}</span>
+            </div>
+          </div>
+
+          <div class="text-xs text-slate-300 bg-slate-900/80 p-3 rounded-xl space-y-1">
+            <p class="font-semibold text-white">الأصناف: ${o.items.map(i => `${i.name} [${i.color}] ×${i.qty} (${i.price * i.qty} ج.م)`).join(' | ')}</p>
+            <p>طريقة الاستلام: <strong>${o.deliveryMethod === 'delivery' ? '🛵 توصيل مندوب' : '🏪 استلام من المحل'}</strong> | الدفع: <strong>${o.paymentMethod}</strong></p>
+            ${o.notes ? `<p class="text-amber-300">📝 ملاحظات الزبون: ${o.notes}</p>` : ''}
+            <p class="text-emerald-400 font-bold text-sm pt-1">إجمالي الفاتورة: ${o.totalAmount} ج.م (شامل الشحن: ${o.shippingCost} ج.م)</p>
+            <div class="flex flex-wrap gap-3 pt-1 text-[11px] text-cyan-300">
+              <span>تأكيد استلام المندوب من المحل: <strong>${o.agentConfirmedPickup ? `✅ نعم (${o.agentPickupTime})` : '⏳ بانتظار المندوب'}</strong></span>
+              <span>تأكيد المندوب لتسليم الزبون: <strong>${o.agentConfirmedCustomerReceipt ? `✅ نعم (${o.agentDeliveryCollectionType || ''})` : '⏳'}</strong></span>
+              <span>تأكيد الزبون للاستلام: <strong>${o.customerConfirmedReceipt ? '✅ نعم' : '⏳'}</strong></span>
+            </div>
+          </div>
+
+          <!-- 3 Explicit Order Status Buttons -->
+          <div class="flex flex-wrap gap-2">
+            <button onclick="updateOrderStatus('${o.id}', 'preparing')" class="bg-amber-600/30 hover:bg-amber-600 text-amber-200 px-3 py-1.5 rounded-xl text-xs font-bold">
+              1️⃣ يتم التجهيز
+            </button>
+            <button onclick="updateOrderStatus('${o.id}', 'waiting_agent')" class="bg-indigo-600/30 hover:bg-indigo-600 text-indigo-200 px-3 py-1.5 rounded-xl text-xs font-bold">
+              2️⃣ تم التجهيز وبانتظار مندوب التوصيل
+            </button>
+            <button onclick="updateOrderStatus('${o.id}', 'handed_to_agent')" class="bg-cyan-600/30 hover:bg-cyan-600 text-cyan-200 px-3 py-1.5 rounded-xl text-xs font-bold">
+              3️⃣ تم التسليم لمندوب التوصيل
+            </button>
+          </div>
+
+          <!-- Handover to Agent + E-Wallet Confirm + Print/Export -->
+          <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800">
+            <select id="assignAgent-${o.id}" class="bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs">
+              <option value="">اختر مندوب التوصيل...</option>
+              ${agents.map(ag => `<option value="${ag.id}" ${o.agentId === ag.id ? 'selected' : ''}>${ag.name}</option>`).join('')}
+            </select>
+            <button onclick="enableOrderHandoverToAgent('${o.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold">
+              🔓 تمكين استلام الأوردر للمندوب
+            </button>
+
+            <button onclick="confirmWalletTransferForOrder('${o.id}')" class="${o.walletConfirmed ? 'bg-slate-700 text-emerald-300' : 'bg-purple-600 hover:bg-purple-500 text-white'} px-3 py-1.5 rounded-xl text-xs font-bold">
+              ${o.walletConfirmed ? '✅ تم تأكيد تحويل المحفظة' : '📲 تأكيد تحويل محفظة إلكترونية'}
+            </button>
+
+            <div class="mr-auto flex flex-wrap gap-1.5">
+              <button onclick="printInvoice('${o.id}', true)" class="bg-slate-700 hover:bg-slate-600 px-2.5 py-1.5 rounded-lg text-xs">🖨️ كاشير 80mm</button>
+              <button onclick="printInvoice('${o.id}', false)" class="bg-slate-700 hover:bg-slate-600 px-2.5 py-1.5 rounded-lg text-xs">🖨️ A4</button>
+              <button onclick="exportSingleInvoiceExcel('${o.id}')" class="bg-emerald-700 hover:bg-emerald-600 px-2.5 py-1.5 rounded-lg text-xs">📊 Excel</button>
+              <button onclick="exportSingleInvoiceWord('${o.id}')" class="bg-blue-700 hover:bg-blue-600 px-2.5 py-1.5 rounded-lg text-xs">📄 Word</button>
+              <button onclick="deleteOrderByAdmin('${o.id}')" class="bg-rose-600/30 hover:bg-rose-600 text-rose-200 px-2.5 py-1.5 rounded-lg text-xs">🗑️ حذف</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ================= DELIVERY AGENT PORTAL ACTIONS =================
+    function agentConfirmOrderPickup(orderId) {
+      const ord = db.orders.find(o => o.id === orderId);
+      if (!ord) return;
+      const shipInput = document.getElementById('shipCost-' + orderId);
+      const shipVal = Number(shipInput ? shipInput.value : 0);
+      const oldShip = Number(ord.shippingCost || 0);
+
+      ord.shippingCost = shipVal;
+      ord.totalAmount = Number(ord.subtotal) + Number(ord.urgentFee || 0) + shipVal;
+      ord.agentConfirmedPickup = true;
+      ord.agentPickupTime = new Date().toLocaleTimeString('ar-EG');
+      ord.status = 'handed_to_agent';
+
+      const cust = db.users.find(u => u.id === ord.customerId);
+      if (cust) cust.balance = Number(cust.balance || 0) + (shipVal - oldShip);
+
+      saveDB();
+      showToast('✅ تم تأكيد استلامك للأوردر وإضافة تكلفة الشحن لفاتورة العميل');
+    }
+
+    function agentCompleteDelivery(orderId, paymentType) {
+      const ord = db.orders.find(o => o.id === orderId);
+      if (!ord) return;
+      ord.agentConfirmedCustomerReceipt = true;
+      ord.agentDeliveryCollectionType = paymentType === 'cash' ? 'نقدي' : 'محفظة إلكترونية';
+      ord.status = 'delivered';
+
+      const cust = db.users.find(u => u.id === ord.customerId);
+      if (cust && !ord.walletConfirmed) {
+        cust.balance = Math.max(0, Number(cust.balance || 0) - Number(ord.totalAmount || 0));
+        ord.walletConfirmed = true;
+      }
+      saveDB();
+      showToast(`✅ تم تأكيد تسليم الأوردر للزبون (${ord.agentDeliveryCollectionType})`);
+    }
+
+    function updateAgentLiveGPS() {
+      if (!navigator.geolocation) {
+        currentUser.gps = '30.0444, 31.2357';
+        currentUser.lastGpsUpdate = new Date().toLocaleTimeString('ar-EG');
+        saveDB();
+        return showToast('📍 تم تحديث موقعك المباشر');
+      }
+      navigator.geolocation.getCurrentPosition(pos => {
+        const u = db.users.find(x => x.id === currentUser.id);
+        if (u) {
+          u.gps = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+          u.lastGpsUpdate = new Date().toLocaleTimeString('ar-EG');
+          saveDB();
+          showToast('📡 تم بث موقعك الجغرافي المباشر للزبون والمالك');
+        }
+      });
+    }
+
+    function renderAgentPortal() {
+      const container = document.getElementById('agentOrdersList');
+      const myOrders = db.orders.filter(o => o.status !== 'canceled' && (o.agentId === currentUser.id || o.handoverEnabled));
+
+      if (myOrders.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400">لا توجد أوردرات مخصصة لك حالياً.</p>`;
+      } else {
+        container.innerHTML = myOrders.map(o => `
+          <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-amber-400">${o.id} - ${o.shopName} (${o.customerName})</span>
+              <span class="text-sm font-bold text-emerald-400">الإجمالي المطلوب: ${o.totalAmount} ج.م</span>
+            </div>
+            <p class="text-xs text-slate-300">📍 العنوان: ${o.customerAddress} | 📞 ${o.customerPhone}</p>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <input type="number" id="shipCost-${o.id}" value="${o.shippingCost || ''}" placeholder="اكتب تكلفة الشحن (ج.م)" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-1.5 text-xs w-44" />
+              <button onclick="agentConfirmOrderPickup('${o.id}')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs">
+                ${o.agentConfirmedPickup ? '✅ تم تأكيد استلام الأوردر' : '📦 تأكيد استلام المندوب للأوردر وتحديد الشحن'}
+              </button>
+              <a href="https://www.google.com/maps?q=${encodeURIComponent(o.customerGps || o.customerAddress)}" target="_blank" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold">
+                🗺️ لوكيشن العميل GPS
+              </a>
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-800">
+              <button onclick="agentCompleteDelivery('${o.id}', 'cash')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold">
+                💵 تم تسليم الأوردر واستلام المبلغ نقدي
+              </button>
+              <button onclick="agentCompleteDelivery('${o.id}', 'wallet')" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-2 rounded-xl text-xs font-bold">
+                📲 تم تسليم الأوردر وتم تحويل المبلغ محفظة إلكترونية
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // ================= CUSTOMERS APPROVAL, WALLET DEDUCTION & STORE MESSAGING =================
+    function approveCustomer(userId) {
+      const u = db.users.find(x => x.id === userId);
+      if (!u) return;
+      u.status = 'active';
+      saveDB();
+      showToast(`✅ تم تفعيل حساب الزبون: ${u.shopName}`);
+    }
+
+    function confirmCustomerDirectWalletPayment(userId) {
+      const u = db.users.find(x => x.id === userId);
+      if (!u) return;
+      const amt = Number(prompt('اكتب المبلغ المحول بالمحفظة أو المدفوع لخصمه من رصيد العميل وإضافته للمبيعات:', u.balance || 0));
+      if (!amt || amt <= 0) return;
+      u.balance = Math.max(0, Number(u.balance || 0) - amt);
+      saveDB();
+      showToast(`✅ تم تأكيد المبلغ (${amt} ج.م) وخصمه من الرصيد المستحق على العميل`);
+    }
+
+    function sendStoreMessageToCustomer(userId) {
+      const u = db.users.find(x => x.id === userId);
+      if (!u) return;
+      const text = prompt(`اكتب رسالتك إلى الزبون (${u.shopName}):`);
+      if (!text) return;
+      db.messages.push({
+        id: 'msg-' + Date.now(),
+        customerId: u.id,
+        sender: currentUser.name,
+        text,
+        time: new Date().toLocaleTimeString('ar-EG')
+      });
+      saveDB();
+      showToast('💬 تم إرسال الرسالة لحساب الزبون بنجاح');
+    }
+
+    function renderAdminCustomers() {
+      const container = document.getElementById('adminCustomersList');
+      const customers = db.users.filter(u => u.role === 'customer');
+      if (customers.length === 0) {
+        container.innerHTML = `<div class="glass p-6 rounded-2xl text-center text-slate-400 text-sm">لا يوجد زبائن مسجلين حالياً.</div>`;
+        return;
+      }
+      container.innerHTML = customers.map(c => `
+        <div class="glass p-4 rounded-2xl flex flex-wrap justify-between items-center gap-3">
+          <div>
+            <span class="font-bold text-white text-sm">${c.shopName} (${c.name})</span>
+            <span class="text-xs px-2 py-0.5 rounded mr-2 ${c.status === 'active' ? 'bg-emerald-950 text-emerald-300' : 'bg-amber-950 text-amber-300'}">
+              ${c.status === 'active' ? 'مفعل' : 'بانتظار الموافقة'}
+            </span>
+            <p class="text-xs text-slate-400 mt-1">📞 ${c.phone} | 📍 ${c.address} | الرصيد المستحق عليه: <strong class="text-rose-400">${c.balance || 0} ج.م</strong></p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            ${c.status !== 'active' ? `<button onclick="approveCustomer('${c.id}')" class="bg-emerald-500 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs">✅ قبول وتفعيل الزبون</button>` : ''}
+            <button onclick="confirmCustomerDirectWalletPayment('${c.id}')" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold">📲 تأكيد تحويل محفظة / دفعة</button>
+            <button onclick="sendStoreMessageToCustomer('${c.id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold">💬 إرسال رسالة للزبون</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Customer Messages Modal
+    function openCustomerMessagesModal() {
+      document.getElementById('messagesModal').classList.remove('hidden');
+      const list = document.getElementById('customerMessagesList');
+      const myMsgs = db.messages.filter(m => m.customerId === currentUser.id);
+      list.innerHTML = myMsgs.length === 0
+        ? `<p class="text-xs text-slate-400 text-center py-4">لا توجد رسائل حالياً. يمكنك إرسال رسالة للمحل بالأسفل.</p>`
+        : myMsgs.map(m => `
+            <div class="bg-slate-800 p-2.5 rounded-xl text-xs">
+              <span class="font-bold text-cyan-400">${m.sender} (${m.time}):</span>
+              <p class="text-white mt-1">${m.text}</p>
+            </div>
+          `).join('');
+    }
+
+    function closeCustomerMessagesModal() {
+      document.getElementById('messagesModal').classList.add('hidden');
+    }
+
+    function sendCustomerReply() {
+      const inp = document.getElementById('custReplyInput');
+      const text = inp.value.trim();
+      if (!text) return;
+      db.messages.push({
+        id: 'msg-' + Date.now(),
+        customerId: currentUser.id,
+        sender: currentUser.shopName,
+        text,
+        time: new Date().toLocaleTimeString('ar-EG')
+      });
+      inp.value = '';
+      saveDB();
+      openCustomerMessagesModal();
+    }
+
+    // ================= TRACKING, RETURNS & MISSING PARTS =================
+    function requestOrderReturn(orderId) {
+      const reason = prompt('اكتب اسم القطعة المراد إرجاعها وسبب المرتجع (تذكر: شحن المرتجع مع المندوب على حساب العميل):');
+      if (!reason) return;
+      db.returns.unshift({
+        id: 'RET-' + Date.now(),
+        orderId,
+        customerName: currentUser.shopName,
+        reason,
+        status: 'pending'
+      });
+      saveDB();
+      showToast('🔄 تم إرسال طلب المرتجع للإدارة');
+    }
+
+    function promptMissingPart(prefill = '') {
+      const txt = prompt('اكتب اسم الموديل وقطعة الغيار غير المتوفرة التي تطلبها:', prefill);
+      if (!txt) return;
+      db.missingRequests.unshift({ id: Date.now(), customer: currentUser.shopName, text: txt });
+      saveDB();
+      showToast('📝 تم إرسال طلب القطعة الناقصة للإدارة');
+    }
+
+    function renderAdminTrackingAndReturns() {
+      const agentsList = document.getElementById('adminAgentsLiveList');
+      const agents = db.users.filter(u => u.role === 'delivery');
+      agentsList.innerHTML = agents.length === 0
+        ? `<p class="text-xs text-slate-400">لا يوجد مناديب مسجلين حالياً.</p>`
+        : agents.map(a => `
+            <div class="bg-slate-900 p-4 rounded-xl flex items-center justify-between gap-3 border border-slate-800">
+              <div class="flex items-center gap-3">
+                <img src="${a.photo || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" class="w-12 h-12 rounded-full object-cover border border-amber-400" />
+                <div class="text-xs">
+                  <p class="font-bold text-white">${a.name} (${a.phone})</p>
+                  <p class="text-cyan-400">📍 الإحداثيات: ${a.gps || 'غير متاح'} ${a.lastGpsUpdate ? `(${a.lastGpsUpdate})` : ''}</p>
+                </div>
+              </div>
+              <a href="https://www.google.com/maps?q=${encodeURIComponent(a.gps || '')}" target="_blank" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold">🗺️ تتبع على الخريطة</a>
+            </div>
+          `).join('');
+
+      document.getElementById('adminReturnsList').innerHTML = db.returns.length === 0
+        ? `<p class="text-xs text-slate-400">لا توجد مرتجعات.</p>`
+        : db.returns.map(r => `<div class="bg-slate-900 p-3 rounded-xl text-xs">${r.customerName} - أوردر ${r.orderId}: ${r.reason}</div>`).join('');
+
+      document.getElementById('adminMissingList').innerHTML = db.missingRequests.length === 0
+        ? `<p class="text-xs text-slate-400">لا توجد طلبات نواقص.</p>`
+        : db.missingRequests.map(m => `<div class="bg-slate-900 p-2.5 rounded-xl">${m.customer}: ${m.text}</div>`).join('');
+    }
+
+    // ================= OWNER ONLY: TEAM & SETTINGS & WIPE =================
+    function saveOwnerSettings() {
+      if (currentUser.role !== 'owner') return;
+      db.settings.storeName = document.getElementById('setStoreName').value.trim() || 'مركز جملة قطع غيار الموبايلات';
+      db.settings.walletNumber = document.getElementById('setWalletNumber').value.trim();
+      db.settings.urgentFee = Number(document.getElementById('setUrgentFee').value || 0);
+      saveDB();
+      showToast('⚙️ تم حفظ إعدادات المالك بنجاح');
+    }
+
+    function addTeamMember(e) {
+      e.preventDefault();
+      if (currentUser.role !== 'owner') return showToast('⛔ التحكم في الأعضاء للمالك فقط');
+      const phone = document.getElementById('teamPhone').value.trim();
+      if (db.users.some(u => u.phone === phone)) return showToast('⚠️ رقم الدخول مسجل بالفعل');
+
+      db.users.push({
+        id: 'team-' + Date.now(),
+        name: document.getElementById('teamName').value.trim(),
+        shopName: 'فريق المحل',
+        phone,
+        password: document.getElementById('teamPass').value.trim(),
+        role: document.getElementById('teamRole').value,
+        status: 'active',
+        photo: document.getElementById('teamPhoto').value.trim() || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
+        gps: '30.0444, 31.2357'
+      });
+      e.target.reset();
+      saveDB();
+      showToast('👤 تم تسجيل العضو بنجاح بكلمة مروره الخاصة');
+    }
+
+    function removeUserByOwner(id) {
+      if (currentUser.role !== 'owner') return;
+      if (id === currentUser.id) return showToast('⚠️ لا يمكنك حذف حسابك الحالي');
+      db.users = db.users.filter(u => u.id !== id);
+      saveDB();
+    }
+
+    function renderTeamMembers() {
+      const list = document.getElementById('teamMembersList');
+      const members = db.users.filter(u => u.role !== 'customer');
+      list.innerHTML = members.map(m => `
+        <div class="bg-slate-900 p-3 rounded-xl flex items-center justify-between border border-slate-800">
+          <div class="flex items-center gap-2.5">
+            <img src="${m.photo || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}" class="w-10 h-10 rounded-full object-cover" />
+            <div class="text-xs">
+              <p class="font-bold text-white">${m.name}</p>
+              <p class="text-cyan-400">${m.role} | الدخول: ${m.phone}</p>
+            </div>
+          </div>
+          ${m.id !== currentUser.id ? `<button onclick="removeUserByOwner('${m.id}')" class="text-rose-400 text-xs font-bold">حذف</button>` : ''}
+        </div>
+      `).join('');
+    }
+
+    async function wipeAllData() {
+      if (!confirm('هل أنت متأكد من حذف جميع المنتجات والأوردرات والحسابات والبدء من الصفر؟')) return;
+      const r = await api('/wipe', {});
+      if (!r.ok) return showToast('⚠️ ' + (r.error || 'تعذر التصفير'));
+      applyState(r);
+      refreshAllViews();
+      showToast('🗑️ تم تصفير وحذف جميع المنتجات والحسابات بالكامل');
+    }
+
+    // ================= INVOICE PRINT (80mm / A4) & EXCEL / WORD EXPORT =================
+    function printInvoice(orderId, isThermal) {
+      const o = db.orders.find(x => x.id === orderId);
+      if (!o) return;
+      const area = document.getElementById('printArea');
+      area.className = isThermal ? 'thermal-80mm' : '';
+      area.innerHTML = `
+        <div style="direction:rtl; font-family:sans-serif; padding:10px;">
+          <h2 style="text-align:center; margin:0;">${db.settings.storeName}</h2>
+          <p style="text-align:center; font-size:12px;">فاتورة مبيعات جملة رقم: ${o.id} ${o.isUrgent ? '(أوردر مستعجل)' : ''}</p>
+          <hr/>
+          <p><strong>العميل:</strong> ${o.shopName} (${o.customerName}) - ${o.customerPhone}</p>
+          <p><strong>العنوان:</strong> ${o.customerAddress}</p>
+          ${o.notes ? `<p><strong>ملاحظات العميل:</strong> ${o.notes}</p>` : ''}
+          <table style="width:100%; border-collapse:collapse; margin-top:8px;" border="1">
+            <thead><tr><th>الصنف</th><th>اللون</th><th>العدد</th><th>الإجمالي</th></tr></thead>
+            <tbody>
+              ${o.items.map(i => `<tr><td>${i.name}</td><td>${i.color}</td><td>${i.qty}</td><td>${i.price * i.qty}</td></tr>`).join('')}
+            </tbody>
+          </table>
+          <p style="margin-top:8px;">قيمة المستعجل: ${o.urgentFee || 0} ج.م | قيمة الشحن: ${o.shippingCost || 0} ج.م</p>
+          <h3>الإجمالي النهائي: ${o.totalAmount} ج.م</h3>
+        </div>
+      `;
+      window.print();
+    }
+
+    function exportSingleInvoiceExcel(orderId) {
+      const o = db.orders.find(x => x.id === orderId);
+      if (!o) return;
+      const rows = o.items.map(i => ({
+        InvoiceID: o.id, Customer: o.shopName, Item: i.name, Color: i.color,
+        Qty: i.qty, UnitPrice: i.price, LineTotal: i.price * i.qty,
+        UrgentFee: o.urgentFee, Shipping: o.shippingCost, GrandTotal: o.totalAmount, Notes: o.notes
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Invoice');
+      XLSX.writeFile(wb, `Invoice_${o.id}.xlsx`);
+    }
+
+    function exportSingleInvoiceWord(orderId) {
+      const o = db.orders.find(x => x.id === orderId);
+      if (!o) return;
+      const html = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'></head><body style="direction:rtl;font-family:Arial;">
+        <h2>${db.settings.storeName} - فاتورة ${o.id}</h2>
+        <p>العميل: ${o.shopName} (${o.customerName}) | الموبايل: ${o.customerPhone}</p>
+        <p>ملاحظات: ${o.notes || 'لا يوجد'}</p>
+        <table border="1" cellpadding="5" style="border-collapse:collapse;width:100%;">
+          <tr><th>الصنف</th><th>اللون</th><th>الكمية</th><th>الإجمالي</th></tr>
+          ${o.items.map(i => `<tr><td>${i.name}</td><td>${i.color}</td><td>${i.qty}</td><td>${i.price * i.qty} ج.م</td></tr>`).join('')}
+        </table>
+        <h3>الشحن: ${o.shippingCost} ج.م | المستعجل: ${o.urgentFee} ج.م | الإجمالي الكلي: ${o.totalAmount} ج.م</h3>
+      </body></html>`;
+      const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Invoice_${o.id}.doc`;
+      a.click();
+    }
+
+    // Auto-login with saved session token
+    window.addEventListener('DOMContentLoaded', async () => {
+      if (!token) return;
+      const r = await api('/state');
+      if (!r.ok) { setToken(''); return; }
+      applyState(r);
+      currentUser = db.users.find(u => u.id === r.me);
+      if (currentUser) { enterPortal(); startPolling(); }
+    });
+  </script>
+</body>
+</html>
